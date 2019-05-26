@@ -6,6 +6,10 @@ yarn-debug.log*
 yarn-error.log*
 data.db
 page/dist/
+templates/index.html
+static/css
+static/fonts
+static/js
 
 
 # Editor directories and files
