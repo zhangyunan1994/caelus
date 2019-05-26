@@ -1,25 +1,27 @@
 <template>
   <div style="height: 100%;">
     <header>
-      这是一个头
+
     </header>
-    <el-row :gutter="20">
+    <el-row :gutter="10">
       <el-col :span="4">
         <aside>
           <el-input
             placeholder="输入关键字进行过滤"
             v-model="filterText">
           </el-input>
-          <el-tree
-            class="filter-tree"
-            :props="defaultProps"
-            :load="loadNode1"
-            lazy
-            :highlight-current="true"
-            :filter-node-method="filterNode"
-            @node-click="handleNodeClick"
-            ref="tree2">
-          </el-tree>
+          <div class="database-tree">
+            <el-tree
+              class="filter-tree"
+              :props="defaultProps"
+              :load="loadNode1"
+              lazy
+              :highlight-current="true"
+              :filter-node-method="filterNode"
+              @node-click="handleNodeClick"
+              ref="tree2">
+            </el-tree>
+          </div>
         </aside>
       </el-col>
       <el-col :span="20">
@@ -28,29 +30,29 @@
           <div v-show="true">
             <el-table
               :data="columns"
-              height="1000"
+              :height="tableHeight"
               border
               stripe
               style="width: 100%">
               <el-table-column
                 prop="column"
                 label="column"
-                width="180">
+                width="200">
               </el-table-column>
               <el-table-column
                 prop="nullable"
                 label="nullable"
-                width="180">
+                width="80">
               </el-table-column>
               <el-table-column
                 prop="type"
                 label="type"
-                width="180">
+                width="170">
               </el-table-column>
               <el-table-column
                 prop="default"
                 label="default"
-                width="180">
+                width="130">
               </el-table-column>
               <el-table-column
                 prop="comment"
@@ -79,7 +81,21 @@
         this.$refs.tree2.filter(val);
       }
     },
-
+    data() {
+      return {
+        tableHeight: 500,
+        filterText: '',
+        columns: [],
+        defaultProps: {
+          children: 'children',
+          label: 'label',
+          isLeaf: 'leaf'
+        }
+      };
+    },
+    mounted: function () {
+      this.tableHeight = window.innerHeight - 100;
+    },
     methods: {
       filterNode(value, data) {
         if (!value) return true;
@@ -127,37 +143,85 @@
           this.columns = response.data
         })
       }
-    },
-    data() {
-      return {
-        filterText: '',
-        columns: [],
-        defaultProps: {
-          children: 'children',
-          label: 'label',
-          isLeaf: 'leaf'
-        }
-      };
     }
   }
 </script>
 
 <style>
   header {
-    height: 80px !important;
+    height: 60px !important;
+    background-color: #252e2f;
+    line-height: 60px;
   }
 
-  aside {
-    width: 200px;
-    height: 500px;
-    overflow:auto;
-  }
-
-  aside::-webkit-scrollbar {
-        display: none;
-    }
-
-  .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content {
+  .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
     background-color: #e4323278 !important;
+  }
+
+  .database-tree {
+    padding-top: 5px;
+    height: calc(100vh - 140px);
+    overflow: auto;
+  }
+
+  .database-tree::-webkit-scrollbar {
+    display: none;
+  }
+
+  .searchClass {
+    border: 1px solid #c5c5c5;
+    border-radius: 20px;
+    background: #f4f4f4;
+  }
+
+  .searchClass .el-input-group__prepend {
+    border: none;
+    background-color: transparent;
+    padding: 0 10px 0 30px;
+  }
+
+  .searchClass .el-input-group__append {
+    border: none;
+    background-color: transparent;
+  }
+
+  .searchClass .el-input__inner {
+    height: 36px;
+    line-height: 36px;
+    border: none;
+    background-color: transparent;
+  }
+
+  .searchClass .el-icon-search {
+    font-size: 16px;
+  }
+
+  .searchClass .centerClass {
+    height: 100%;
+    line-height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: right;
+  }
+
+  .searchClass .line {
+    width: 1px;
+    height: 26px;
+    background-color: #c5c5c5;
+    margin-left: 14px;
+  }
+
+  .searchClass:hover {
+    border: 1px solid #D5E3E8;
+    background: #fff;
+  }
+
+  .searchClass:hover .line {
+    background-color: #D5E3E8;
+  }
+
+  .searchClass:hover .el-icon-search {
+    color: #409eff;
+    font-size: 16px;
   }
 </style>
