@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, render_template, request
 from flask_cors import *
 from flask_sqlalchemy import SQLAlchemy
-from db_util import get_databases, get_tables, get_columns
+from db_util import get_databases, get_tables, get_columns, get_connection_columns
 
 
 app = Flask(__name__)
@@ -97,6 +97,23 @@ def connection_database_table_column(id, database, table):
         return jsonify({"code": "500", "message": "恭喜你，什么都没查到，我都开始鄙视你了."})
     columns = get_columns(host=connection.host, port=connection.port, user=connection.user,
                            password=connection.password, database=database, table=table)
+    return jsonify([{"schema": column[0],
+                     "table": column[1],
+                     "column": column[2],
+                     "nullable": column[3],
+                     "type": column[4],
+                     "comment": column[5],
+                     "default": column[6],
+                     } for column in columns])
+
+
+@app.route("/connection/<int:id>/column/<column>")
+def connection_column(id, column):
+    connection = TBConnection.query.filter_by(id=id).first()
+    if not connection:
+        return jsonify({"code": "500", "message": "恭喜你，什么都没查到，我都开始鄙视你了."})
+    columns = get_connection_columns(host=connection.host, port=connection.port, user=connection.user,
+                           password=connection.password, column=column)
     return jsonify([{"schema": column[0],
                      "table": column[1],
                      "column": column[2],

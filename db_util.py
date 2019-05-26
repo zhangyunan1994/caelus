@@ -15,6 +15,12 @@ _select_column_sql = "SELECT \
     from information_schema.`COLUMNS`\
     where TABLE_SCHEMA = %s and TABLE_NAME = %s"
 
+_select_connection_column_sql = "select \
+    TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, IS_NULLABLE, COLUMN_TYPE, COLUMN_COMMENT, COLUMN_DEFAULT \
+FROM information_schema.`COLUMNS` \
+where COLUMN_NAME like %s"
+
+
 def get_databases(host, port, user, password):
     connect = pymysql.connect(host=host, user=user, password=password, port=port)
     cursor = connect.cursor()
@@ -37,6 +43,15 @@ def get_columns(host, port, user, password, database, table):
     connect = pymysql.connect(host=host, user=user, password=password, port=port)
     cursor = connect.cursor()
     cursor.execute(_select_column_sql, (database, table))
+    all_database = cursor.fetchall()
+    connect.close()
+    return all_database
+
+
+def get_connection_columns(host, port, user, password, column):
+    connect = pymysql.connect(host=host, user=user, password=password, port=port)
+    cursor = connect.cursor()
+    cursor.execute(_select_connection_column_sql, ("%" + column + "%"))
     all_database = cursor.fetchall()
     connect.close()
     return all_database
